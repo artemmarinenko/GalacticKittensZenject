@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 public class EndGameManager : SingletonNetwork<EndGameManager>
 {
@@ -27,7 +28,16 @@ public class EndGameManager : SingletonNetwork<EndGameManager>
 
     private PlayerShipScore m_bestPlayer;               // Catch who is the best player -> only on server
     private List<ulong> m_connectedClients = new List<ulong>();
+    
+    private LoadingSceneManager m_loadingSceneManager;
 
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
+    
+    
     private void Start()
     {        
         AudioManager.Instance.PlaySoundEffect(m_endGameClip, 1f);
@@ -154,7 +164,7 @@ public class EndGameManager : SingletonNetwork<EndGameManager>
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        LoadingSceneManager.Instance.LoadScene(SceneName.Menu, false);
+        m_loadingSceneManager.LoadScene(SceneName.Menu, false);
     }
 
     [ClientRpc]

@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 public class PlayerShipController : NetworkBehaviour, IDamagable
 {
@@ -42,12 +43,20 @@ public class PlayerShipController : NetworkBehaviour, IDamagable
     [HideInInspector]
     public GameplayManager gameplayManager;
 
+
     NetworkVariable<int> m_specials = new NetworkVariable<int>(0);
 
     bool m_isPlayerDefeated;
 
     const string k_hitEffect = "_Hit";
+    
 
+    private LoadingSceneManager m_loadingSceneManager;
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
     void Update()
     {
         if (IsOwner)
@@ -128,7 +137,7 @@ public class PlayerShipController : NetworkBehaviour, IDamagable
     void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        LoadingSceneManager.Instance.LoadScene(SceneName.Menu, false);
+        m_loadingSceneManager.LoadScene(SceneName.Menu, false);
     }
 
     [ClientRpc]

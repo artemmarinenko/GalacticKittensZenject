@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 public class PlayerCharSelection : NetworkBehaviour
 {
@@ -19,6 +20,13 @@ public class PlayerCharSelection : NetworkBehaviour
     [SerializeField]
     private AudioClip _changedCharacterClip;
 
+    private LoadingSceneManager m_loadingSceneManager;
+
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
     private void Start()
     {
         if (IsServer)
@@ -149,7 +157,7 @@ public class PlayerCharSelection : NetworkBehaviour
     void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        LoadingSceneManager.Instance.LoadScene(SceneName.Menu, false);
+        m_loadingSceneManager.LoadScene(SceneName.Menu, false);
     }
 
     [ClientRpc]

@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 public class ClientConnection : SingletonNetwork<ClientConnection>
 {
@@ -9,6 +10,16 @@ public class ClientConnection : SingletonNetwork<ClientConnection>
     [SerializeField]
     private CharacterDataSO[] m_characterDatas;
 
+    private LoadingSceneManager m_loadingSceneManager;
+
+    
+
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
+    
     // This is a check for some script that depends on the client where it leaves
     // to check if this was a client that should no be allowed an there for the code should not run
     public bool IsExtraClient(ulong clientId)
@@ -38,7 +49,7 @@ public class ClientConnection : SingletonNetwork<ClientConnection>
     //    so we check the data of the characters because there we now witch character is selected and by who
     private bool CanConnect(ulong clientId)
     {
-        if (LoadingSceneManager.Instance.SceneActive == SceneName.CharacterSelection)
+        if (m_loadingSceneManager.SceneActive == SceneName.CharacterSelection)
         {
             int playersConnected = NetworkManager.Singleton.ConnectedClientsList.Count;
 
@@ -105,6 +116,6 @@ public class ClientConnection : SingletonNetwork<ClientConnection>
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        LoadingSceneManager.Instance.LoadScene(SceneName.Menu, false);
+        m_loadingSceneManager.LoadScene(SceneName.Menu, false);
     }
 }

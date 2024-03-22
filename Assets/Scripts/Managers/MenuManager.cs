@@ -2,6 +2,7 @@ using Unity.Netcode;
 
 using UnityEngine;
 using System.Collections;
+using Zenject;
 
 public class MenuManager : MonoBehaviour
 {
@@ -19,6 +20,14 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField]
     private SceneName nextScene = SceneName.CharacterSelection;
+    
+    private LoadingSceneManager m_loadingSceneManager;
+
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
 
     private IEnumerator Start()
     {
@@ -47,7 +56,7 @@ public class MenuManager : MonoBehaviour
         // Set the events on the loading manager
         // Doing this because every time the network session ends the loading manager stops
         // detecting the events
-        LoadingSceneManager.Instance.Init();
+        m_loadingSceneManager.Init();
     }
 
     private void Update()
@@ -67,7 +76,7 @@ public class MenuManager : MonoBehaviour
     {
         NetworkManager.Singleton.StartHost();
         AudioManager.Instance.PlaySoundEffect(m_confirmClip);
-        LoadingSceneManager.Instance.LoadScene(nextScene);
+        m_loadingSceneManager.LoadScene(nextScene);
     }
 
     public void OnClickJoin()

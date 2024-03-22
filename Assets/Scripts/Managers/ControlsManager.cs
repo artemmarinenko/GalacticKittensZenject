@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 // This scene is show for a moment before gameplay
 public class ControlsManager : NetworkBehaviour
@@ -10,6 +11,15 @@ public class ControlsManager : NetworkBehaviour
     [SerializeField]
     private SceneName m_sceneName;
 
+    private LoadingSceneManager m_loadingSceneManager;
+
+
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
+    
     private void Start()
     {
         // Invoke the next scene, waiting some time
@@ -21,13 +31,13 @@ public class ControlsManager : NetworkBehaviour
     private void LoadNextScene()
     {
         // Safety check
-        if (LoadingSceneManager.Instance != null)
+        if (m_loadingSceneManager != null)
         {
             // Tell the clients to start the loading effect
             LoadClientRpc();
 
             // Loading scene on server
-            LoadingSceneManager.Instance.LoadScene(m_sceneName);
+            m_loadingSceneManager.LoadScene(m_sceneName);
         }
     }
 

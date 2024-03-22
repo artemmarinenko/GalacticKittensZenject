@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using Zenject;
 
 public class GameplayManager : SingletonNetwork<GameplayManager>
 {
@@ -24,6 +25,17 @@ public class GameplayManager : SingletonNetwork<GameplayManager>
     private List<ulong> m_connectedClients = new List<ulong>();
     private List<PlayerShipController> m_playerShips = new List<PlayerShipController>();
 
+    
+    private LoadingSceneManager m_loadingSceneManager;
+
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
+    
+    
+    
     private void OnEnable()
     {
         if (!IsServer)
@@ -55,7 +67,7 @@ public class GameplayManager : SingletonNetwork<GameplayManager>
         if (m_numberOfPlayerConnected <= 0)
         {
             LoadClientRpc();
-            LoadingSceneManager.Instance.LoadScene(SceneName.Defeat);
+            m_loadingSceneManager.LoadScene(SceneName.Defeat);
         }
         else
         {
@@ -133,7 +145,7 @@ public class GameplayManager : SingletonNetwork<GameplayManager>
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        LoadingSceneManager.Instance.LoadScene(SceneName.Menu, false);
+        m_loadingSceneManager.LoadScene(SceneName.Menu, false);
     }
 
     [ClientRpc]
@@ -148,7 +160,7 @@ public class GameplayManager : SingletonNetwork<GameplayManager>
     public void BossDefeat()
     {
         LoadClientRpc();
-        LoadingSceneManager.Instance.LoadScene(SceneName.Victory);
+        m_loadingSceneManager.LoadScene(SceneName.Victory);
     }
 
     public void ExitToMenu()
@@ -160,7 +172,7 @@ public class GameplayManager : SingletonNetwork<GameplayManager>
         else
         {
             NetworkManager.Singleton.Shutdown();
-            LoadingSceneManager.Instance.LoadScene(SceneName.Menu, false);
+            m_loadingSceneManager.LoadScene(SceneName.Menu, false);
         }
     }
 

@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 /*
 * Singleton to control the changes on the char sprites and the flow of the scene
@@ -87,7 +88,14 @@ public class CharacterSelectionManager : SingletonNetwork<CharacterSelectionMana
     float m_timer;
 
     private readonly Color k_selectedColor = new Color32(74, 74, 74, 255);
+    private LoadingSceneManager m_loadingSceneManager;
 
+    [Inject]
+    private void Construct(LoadingSceneManager loadingSceneManager)
+    {
+        m_loadingSceneManager = loadingSceneManager;
+    }
+    
     void Start()
     {
         m_timer = m_timeToStartGame;
@@ -120,7 +128,7 @@ public class CharacterSelectionManager : SingletonNetwork<CharacterSelectionMana
     void StartGame()
     {
         StartGameClientRpc();
-        LoadingSceneManager.Instance.LoadScene(m_nextScene);
+        m_loadingSceneManager.LoadScene(m_nextScene);
     }
 
     [ClientRpc]

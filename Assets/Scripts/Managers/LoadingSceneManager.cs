@@ -19,7 +19,7 @@ public enum SceneName : byte
     // Add more scenes states if needed
 };
 
-public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
+public class LoadingSceneManager : MonoBehaviour
 {
     public SceneName SceneActive => m_sceneActive;
 
@@ -27,6 +27,9 @@ public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
 
     // After running the menu scene, which initiates this manager, we subscribe to these events
     // due to the fact that when a network session ends it cannot longer listen to them.
+    
+    // private void Awake() => Init();
+
     public void Init()
     {
         NetworkManager.Singleton.SceneManager.OnLoadComplete -= OnLoadComplete;
